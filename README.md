@@ -13,8 +13,8 @@ mlbdata_crawler is Python script to crawl MLB games and players data from MLB.co
 
 # Setting
 
-A config file is `crawler.conf`.
-`chrome_path` is Google Chrome binary path.(necessary option)
-`chromedriver_path` is ChromeDriver binary path.(necessary option)
+A config file is `crawler.conf`.  
+`chrome_path` is Google Chrome binary path.(necessary option)  
+`chromedriver_path` is ChromeDriver binary path.(necessary option)  
 `year` is a year of which you want game data.(necessary option)
 
