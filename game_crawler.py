@@ -23,9 +23,9 @@ class Crawler:
 
         options = chrome_options()
         options.binary_location = chrome_path
-        options.add_argument('--proxy-server=socks5://127.0.0.1:9050');
-        options.add_argument('--headless')
-        options.add_argument('--no-sandbox')
+        options.add_argument("--proxy-server=socks5://127.0.0.1:9050");
+        options.add_argument("--headless")
+        options.add_argument("--no-sandbox")
 
         browser = webdriver.Chrome(chrome_options=options,
                                    executable_path=chromedriver_path)
@@ -41,16 +41,16 @@ class Crawler:
             try:
                 browser.get(url)
                 source = browser.page_source
-                with open(path.replace('inning/', '') + '.bz2', 'wb') as f:
-                    f.write(bz2.compress(source.encode('utf-8')))
-                print('Got it!')
+                with open(path.replace("inning/", "") + ".bz2", "wb") as f:
+                    f.write(bz2.compress(source.encode("utf-8")))
+                print("Got it!")
                 break
             
             except Exception as err:
                 print(err)
 
                 if type(err) == UnexpectedAlertPresentException:
-                    print('Finish to Check?')
+                    print("Finish to Check?")
                     if input():
                         alert = browser.switch_to_alert()
                         alert.accept()
@@ -66,13 +66,13 @@ class Crawler:
 
     def crawl_xmls(self, browser, year, start=None):
 
-        xmls_to_fetch = ['boxscore.xml',
-                         'rawboxscore.xml',
-                         'game_events.xml',
-                         'linescore.xml',
-                         'players.xml',
-                         'inning/inning_all.xml',
-                         'game.xml']
+        xmls_to_fetch = ["boxscore.xml",
+                         "rawboxscore.xml",
+                         "game_events.xml",
+                         "linescore.xml",
+                         "players.xml",
+                         "inning/inning_all.xml",
+                         "game.xml"]
 
         event_dates = mlbgame.important_dates(year=year)
         last_date = event_dates.last_date_seas
@@ -85,8 +85,8 @@ class Crawler:
             games = mlbgame.combine_games(game_scoreboards)
 
             year = date.year
-            month = '{0:02d}'.format(date.month)
-            day = '{0:02d}'.format(date.day)
+            month = "{0:02d}".format(date.month)
+            day = "{0:02d}".format(date.day)
 
             for game in games:
                 gameid = game.game_id
@@ -94,7 +94,7 @@ class Crawler:
                 if not os.path.exists("xml/" + gameid):
                     os.makedirs("xml/" + gameid)
 
-                dir_path = 'http://gd2.mlb.com/components/game/mlb/year_%s/month_%s/day_%s/gid_%s/' % \
+                dir_path = "http://gd2.mlb.com/components/game/mlb/year_%s/month_%s/day_%s/gid_%s/" % \
                           (year, month, day, gameid)
 
                 for xml in xmls_to_fetch:
@@ -106,7 +106,7 @@ class Crawler:
 if __name__ == "__main__":
 
     config = configparser.ConfigParser()
-    config.read('crawler.conf')
+    config.read("crawler.conf")
 
     year = config.get("crawling", "year")
     start_date = config.get("crawling", "start_date") if config.has_option("crawling", "start_date") else None
@@ -121,5 +121,4 @@ if __name__ == "__main__":
         browser.close()
         browser.quit()
 
-    print('finish!')
-
+    print("finish!")
