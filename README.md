@@ -2,6 +2,10 @@
 
 mlbdata_crawler is Python script to crawl MLB games and players data from MLB.com.
 
+# Environment
+
+I ran this script on *Debian GNU/Linux buster/sid*.
+
 # Dependency
 
 - [GoogleChrome](https://www.google.co.jp/chrome/index.html)
