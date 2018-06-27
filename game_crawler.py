@@ -13,22 +13,30 @@ from selenium.common.exceptions import UnexpectedAlertPresentException
 class Crawler:
 
     def __init__(self):
+
+        config = configparser.ConfigParser()
+        config.read("./crawler.conf")
+        self.year = config.get("crawling", "year")
+        self.start_date = config.get("crawling", "start_date") if config.has_option("crawling", "start_date") else None
+        self.chrome_path = config.get("browser", "chrome_path")
+        self.chromedriver_path = config.get("browser", "chromedriver_path")
+
         self.max_retry = 5
 
     def get_useragent(self):
         useragent_list = []
         return randrange(useragent_list)
 
-    def setup_browser(self, chrome_path, chromedriver_path):
+    def setup_browser(self):
 
         options = chrome_options()
-        options.binary_location = chrome_path
+        options.binary_location = self.chrome_path
         options.add_argument("--proxy-server=socks5://127.0.0.1:9050");
         options.add_argument("--headless")
         options.add_argument("--no-sandbox")
 
         browser = webdriver.Chrome(chrome_options=options,
-                                   executable_path=chromedriver_path)
+                                   executable_path=self.chromedriver_path)
         return browser
 
     def fetch_xml(self, url, path):
@@ -64,7 +72,7 @@ class Crawler:
                 sleep(randrange(5))
                 continue
 
-    def crawl_xmls(self, browser, year, start=None):
+    def crawl_xmls(self, browser):
 
         xmls_to_fetch = ["boxscore.xml",
                          "rawboxscore.xml",
@@ -74,9 +82,9 @@ class Crawler:
                          "inning/inning_all.xml",
                          "game.xml"]
 
-        event_dates = mlbgame.important_dates(year=year)
+        event_dates = mlbgame.important_dates(year=self.year)
         last_date = event_dates.last_date_seas
-        first_date = event_dates.first_date_seas if start is None else start
+        first_date = event_dates.first_date_seas if self.start_date is None else self.start_date
         dates = date_range(first_date, last_date)
 
         for date in dates:
@@ -105,17 +113,9 @@ class Crawler:
 
 if __name__ == "__main__":
 
-    config = configparser.ConfigParser()
-    config.read("crawler.conf")
-
-    year = config.get("crawling", "year")
-    start_date = config.get("crawling", "start_date") if config.has_option("crawling", "start_date") else None
-    chrome_path = config.get("browser", "chrome_path")
-    chromedriver_path = config.get("browser", "chromedriver_path")
-
     crawler = Crawler()
-    browser = crawler.setup_browser(chrome_path, chromedriver_path)
-    crawler.crawl_xmls(browser=browser, year=year, start=start_date)
+    browser = crawler.setup_browser()
+    crawler.crawl_xmls(browser=browser)
 
     if "browser" in globals():
         browser.close()
